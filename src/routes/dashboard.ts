@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { requireAdmin } from "../middleware/auth.js";
+import { ContactMessage } from "../models/ContactMessage.js";
 import { Order } from "../models/Order.js";
 import { Product } from "../models/Product.js";
 import { Review } from "../models/Review.js";
@@ -9,13 +10,16 @@ export const dashboardRouter = Router();
 
 dashboardRouter.get("/stats", requireAdmin, async (_req, res, next) => {
   try {
-    const [users, products, orders, reviews, revenue] = await Promise.all([
-      User.countDocuments(),
-      Product.countDocuments(),
-      Order.countDocuments(),
-      Review.countDocuments(),
-      Order.aggregate([{ $group: { _id: null, total: { $sum: "$total" } } }]),
-    ]);
+    const [users, products, orders, reviews, messages, unreadMessages, revenue] =
+      await Promise.all([
+        User.countDocuments(),
+        Product.countDocuments(),
+        Order.countDocuments(),
+        Review.countDocuments(),
+        ContactMessage.countDocuments(),
+        ContactMessage.countDocuments({ read: false }),
+        Order.aggregate([{ $group: { _id: null, total: { $sum: "$total" } } }]),
+      ]);
 
     const recentOrders = await Order.find().sort({ createdAt: -1 }).limit(6);
 
@@ -24,6 +28,8 @@ dashboardRouter.get("/stats", requireAdmin, async (_req, res, next) => {
       products,
       orders,
       reviews,
+      messages,
+      unreadMessages,
       revenue: revenue[0]?.total ?? 0,
       recentOrders: recentOrders.map((order) => ({
         id: String(order._id),

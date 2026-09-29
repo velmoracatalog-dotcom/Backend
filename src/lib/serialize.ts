@@ -23,13 +23,23 @@ export function publicUser(doc: WithId) {
     email: string;
     name: string;
     picture?: string;
+    phone?: string;
+    address?: string;
+    city?: string;
+    postalCode?: string;
+    country?: string;
     role: "user" | "admin";
   };
   return {
     id: item.id,
     email: item.email,
     name: item.name,
-    picture: item.picture,
+    picture: item.picture ?? "",
+    phone: item.phone ?? "",
+    address: item.address ?? "",
+    city: item.city ?? "",
+    postalCode: item.postalCode ?? "",
+    country: item.country ?? "Pakistan",
     role: item.role,
   };
 }
