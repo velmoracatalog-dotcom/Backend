@@ -1,14 +1,20 @@
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 import { env } from "./config/env.js";
 import { connectDb } from "./db/connect.js";
 import { errorHandler } from "./middleware/error.js";
+import { authRouter } from "./routes/auth.js";
+import { cartRouter } from "./routes/cart.js";
 import { catalogRouter } from "./routes/catalog.js";
 import { categoriesRouter } from "./routes/categories.js";
+import { dashboardRouter } from "./routes/dashboard.js";
+import { ordersRouter } from "./routes/orders.js";
 import { productsRouter } from "./routes/products.js";
 import { reviewsRouter } from "./routes/reviews.js";
 import { settingsRouter } from "./routes/settings.js";
 import { uploadRouter } from "./routes/upload.js";
+import { usersRouter } from "./routes/users.js";
 
 function isAllowedOrigin(origin?: string) {
   if (!origin) return true;
@@ -41,8 +47,10 @@ app.use(
     origin(origin, callback) {
       callback(null, isAllowedOrigin(origin));
     },
+    credentials: true,
   }),
 );
+app.use(cookieParser());
 app.use(express.json({ limit: "2mb" }));
 
 app.get("/", (_req, res) => {
@@ -71,11 +79,16 @@ app.use(async (req, res, next) => {
   }
 });
 
+app.use("/api/auth", authRouter);
 app.use("/api/catalog", catalogRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/categories", categoriesRouter);
 app.use("/api/reviews", reviewsRouter);
 app.use("/api/settings", settingsRouter);
 app.use("/api/upload", uploadRouter);
+app.use("/api/orders", ordersRouter);
+app.use("/api/cart", cartRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/dashboard", dashboardRouter);
 
 app.use(errorHandler);

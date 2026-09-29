@@ -1,6 +1,6 @@
 import { Router } from "express";
 import multer from "multer";
-import { requireAdmin } from "../middleware/admin.js";
+import { requireAdmin } from "../middleware/auth.js";
 import { hasCloudinary } from "../config/env.js";
 import { uploadBuffer } from "../lib/cloudinary.js";
 

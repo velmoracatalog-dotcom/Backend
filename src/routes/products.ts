@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { requireAdmin } from "../middleware/admin.js";
+import mongoose from "mongoose";
+import { requireAdmin } from "../middleware/auth.js";
 import { Product } from "../models/Product.js";
 import { serializeProduct } from "../lib/serialize.js";
 
@@ -16,7 +17,10 @@ productsRouter.get("/", async (_req, res, next) => {
 
 productsRouter.get("/:slug", async (req, res, next) => {
   try {
-    const product = await Product.findOne({ slug: req.params.slug });
+    const slug = req.params.slug;
+    const product = await Product.findOne(
+      mongoose.isValidObjectId(slug) ? { $or: [{ slug }, { _id: slug }] } : { slug },
+    );
     if (!product) {
       res.status(404).json({ message: "Product not found" });
       return;

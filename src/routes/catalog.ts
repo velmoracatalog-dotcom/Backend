@@ -12,7 +12,9 @@ catalogRouter.get("/", async (_req, res, next) => {
     const [products, categories, reviews, settings] = await Promise.all([
       Product.find().sort({ createdAt: 1 }),
       Category.find().sort({ order: 1 }),
-      Review.find().sort({ order: 1 }),
+      Review.find({ $or: [{ visible: true }, { visible: { $exists: false } }] }).sort({
+        createdAt: -1,
+      }),
       Settings.findOne({ key: "site" }),
     ]);
 

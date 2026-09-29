@@ -13,6 +13,23 @@ export function serializeProduct(doc: WithId & { slug?: string }) {
   const item = serialize(doc);
   return {
     ...item,
-    id: doc.slug ?? item.id,
+    slug: doc.slug ?? item.id,
+  };
+}
+
+export function publicUser(doc: WithId) {
+  const item = serialize(doc) as {
+    id: string;
+    email: string;
+    name: string;
+    picture?: string;
+    role: "user" | "admin";
+  };
+  return {
+    id: item.id,
+    email: item.email,
+    name: item.name,
+    picture: item.picture,
+    role: item.role,
   };
 }

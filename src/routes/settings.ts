@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { requireAdmin } from "../middleware/admin.js";
+import { requireAdmin } from "../middleware/auth.js";
 import { Settings } from "../models/Settings.js";
 import { serialize } from "../lib/serialize.js";
 
