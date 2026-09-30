@@ -10,6 +10,7 @@ import { catalogRouter } from "./routes/catalog.js";
 import { contactRouter } from "./routes/contact.js";
 import { categoriesRouter } from "./routes/categories.js";
 import { dashboardRouter } from "./routes/dashboard.js";
+import { notificationsRouter } from "./routes/notifications.js";
 import { ordersRouter } from "./routes/orders.js";
 import { productsRouter } from "./routes/products.js";
 import { reviewsRouter } from "./routes/reviews.js";
@@ -91,6 +92,7 @@ app.use("/api/orders", ordersRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/contact", contactRouter);
+app.use("/api/notifications", notificationsRouter);
 app.use("/api/dashboard", dashboardRouter);
 
 app.use(errorHandler);

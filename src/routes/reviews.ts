@@ -1,5 +1,6 @@
 import { Router } from "express";
 import mongoose from "mongoose";
+import { notify } from "../lib/notify.js";
 import { serialize } from "../lib/serialize.js";
 import { requireAdmin, requireAuth, type AuthedRequest } from "../middleware/auth.js";
 import { Product } from "../models/Product.js";
@@ -48,6 +49,13 @@ reviewsRouter.post("/", requireAuth, async (req: AuthedRequest, res, next) => {
       productId: product ? String(product._id) : productId,
       productName: product?.name,
       visible: true,
+    });
+    await notify({
+      type: "review",
+      title: "New review",
+      body: `${review.author} left ${review.rating}★ on ${review.productName || "the house"}.`,
+      link: "/admin/reviews",
+      refId: String(review._id),
     });
 
     if (product) {

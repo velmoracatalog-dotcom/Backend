@@ -2,8 +2,9 @@ import mongoose, { Schema } from "mongoose";
 
 const userSchema = new Schema(
   {
-    googleId: { type: String, required: true, unique: true },
+    googleId: { type: String, unique: true, sparse: true },
     email: { type: String, required: true, unique: true, lowercase: true },
+    passwordHash: { type: String, default: "" },
     name: { type: String, required: true },
     picture: { type: String, default: "" },
     phone: { type: String, default: "" },

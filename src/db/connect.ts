@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { env } from "../config/env.js";
+import { repairUserIndexes } from "./repairUserIndexes.js";
 
 const globalForMongoose = globalThis as typeof globalThis & {
   mongooseConnect?: Promise<typeof mongoose>;
@@ -13,9 +14,14 @@ export async function connectDb() {
   if (mongoose.connection.readyState === 1) return mongoose;
 
   if (!globalForMongoose.mongooseConnect) {
-    globalForMongoose.mongooseConnect = mongoose.connect(env.mongodbUri, {
-      serverSelectionTimeoutMS: 10000,
-    });
+    globalForMongoose.mongooseConnect = mongoose
+      .connect(env.mongodbUri, {
+        serverSelectionTimeoutMS: 10000,
+      })
+      .then(async (connection) => {
+        await repairUserIndexes();
+        return connection;
+      });
   }
 
   return globalForMongoose.mongooseConnect;

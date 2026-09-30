@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { notify } from "../lib/notify.js";
 import { serialize } from "../lib/serialize.js";
 import { optionalAuth, requireAdmin, type AuthedRequest } from "../middleware/auth.js";
 import { ContactMessage } from "../models/ContactMessage.js";
@@ -44,6 +45,13 @@ contactRouter.post("/", optionalAuth, async (req: AuthedRequest, res, next) => {
       userId: req.auth?.id,
     });
 
+    await notify({
+      type: "message",
+      title: "New message",
+      body: `${name} wrote${subject ? `: ${subject}` : "."}`,
+      link: "/admin/messages",
+      refId: String(created._id),
+    });
     res.status(201).json(serialize(created));
   } catch (error) {
     next(error);

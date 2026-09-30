@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { notify } from "../lib/notify.js";
 import { serialize } from "../lib/serialize.js";
 import { requireAdmin, requireAuth, type AuthedRequest } from "../middleware/auth.js";
 import { Cart } from "../models/Cart.js";
@@ -67,6 +68,13 @@ ordersRouter.post("/", requireAuth, async (req: AuthedRequest, res, next) => {
     });
 
     await Cart.findOneAndUpdate({ userId: req.auth?.id }, { items: [] });
+    await notify({
+      type: "order",
+      title: "New order",
+      body: `${order.customer?.name || "A guest"} placed an order of Rs. ${order.total}.`,
+      link: "/admin/orders",
+      refId: String(order._id),
+    });
     res.status(201).json(serialize(order));
   } catch (error) {
     next(error);
@@ -75,6 +83,11 @@ ordersRouter.post("/", requireAuth, async (req: AuthedRequest, res, next) => {
 
 ordersRouter.patch("/:id", requireAdmin, async (req, res, next) => {
   try {
+    const allowed = ["pending", "confirmed", "packed", "shipped", "delivered", "cancelled"];
+    if (!allowed.includes(req.body.status)) {
+      res.status(400).json({ message: "Invalid order status" });
+      return;
+    }
     const order = await Order.findByIdAndUpdate(
       req.params.id,
       { status: req.body.status },

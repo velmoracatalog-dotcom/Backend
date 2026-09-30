@@ -29,6 +29,7 @@ export function publicUser(doc: WithId) {
     postalCode?: string;
     country?: string;
     role: "user" | "admin";
+    createdAt?: string | Date;
   };
   return {
     id: item.id,
@@ -41,5 +42,6 @@ export function publicUser(doc: WithId) {
     postalCode: item.postalCode ?? "",
     country: item.country ?? "Pakistan",
     role: item.role,
+    createdAt: item.createdAt ? String(item.createdAt) : undefined,
   };
 }
